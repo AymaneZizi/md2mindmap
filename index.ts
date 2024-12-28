@@ -1,19 +1,17 @@
-#!/usr/bin/env node
-"use strict";
-
-const fs = require('fs');
-const path = require('path');
-const { parse } = require('./utils/Parser');
-const { render } = require('./utils/Renderer');
-const express = require('express');
-const chokidar = require('chokidar');
+import express, { Request, Response } from 'express';
+import * as path from 'path';
+import { parse } from './utils/Parser';
+import { render } from './utils/Renderer';
 
 const app = express();
 const port = 3000;
 
 function startServer() {
-    app.get("/", (req, res) => {
-        res.send(render(JSON.stringify([], null, 4))); // Start with empty array
+    // Serve static files from public directory
+    app.use(express.static(path.join(__dirname, '../public')));
+    
+    app.get("/", (_req: Request, res: Response) => {
+        res.send(render(JSON.stringify([], null, 4)));// Start with empty array
     });
 
     app.listen(port, () => {
