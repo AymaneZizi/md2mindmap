@@ -31,10 +31,8 @@ The webserver will listen on `localhost:3000` by default, but you can alter this
 $ text2tree my-text-file.txt -p 3020
 ```
 
-### Image export [under development]
+### Image export 
 
-You can also export the tree graph to a `.png` file using the `-o --output` flag:
-
-```Bash
-$ text2tree my-text-file.txt -o my-tree.jpeg
-```
+You can also export the tree graph to a `.svg` file when you click 'Save As PNG'
+example of exported tree 
+![exported PNG](/docs/mindmap.svg)
