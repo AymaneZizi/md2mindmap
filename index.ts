@@ -1,35 +1,24 @@
-const fs = require("fs");
-const path = require("path");
-const { parse } = require("./utils/Parser");
-const { render } = require("./utils/Renderer");
-const express = require("express");
-const yargs = require("yargs/yargs");
-const { hideBin } = require("yargs/helpers");
-const argv = yargs(hideBin(process.argv)).argv;
+#!/usr/bin/env node
+"use strict";
 
-const { port, p } = argv;
-const config = {
-    port: p || port || 3000,
-};
+const fs = require('fs');
+const path = require('path');
+const { parse } = require('./utils/Parser');
+const { render } = require('./utils/Renderer');
+const express = require('express');
+const chokidar = require('chokidar');
 
-const fileName = String(argv._[0]);
-if (fileName.length > 0) {
-    if (fileName.includes(".txt")) {
-        const app = express();
-        app.get("/", (req, res) => {
-            const fileContent = fs.readFileSync(path.join(fileName), "utf-8");
-            res.send(
-                render(
-                    JSON.stringify(parse(fileContent.split("\n")), null, 4)
-                )
-            );
-        });
-        app.listen(config.port, () => {
-            console.info(`SVG Tree available on http://127.0.0.1:${config.port}`);
-        });
-    } else {
-        console.error("[ERROR] Only *.txt files are supported");
-    }
-} else {
-    console.error("[ERROR] No file specified");
+const app = express();
+const port = 3000;
+
+function startServer() {
+    app.get("/", (req, res) => {
+        res.send(render(JSON.stringify([], null, 4))); // Start with empty array
+    });
+
+    app.listen(port, () => {
+        console.info(`🌲 SVG Tree available on http://127.0.0.1:${port}`);
+    });
 }
+
+startServer();
