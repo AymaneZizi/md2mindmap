@@ -1,7 +1,20 @@
+export interface TreeNode {
+    content: string;
+    children: TreeNode[];
+    level?: number;
+}
+
+export function parse(input: string | string[], type: 'text' | 'csv' = 'text'): TreeNode[] {
+    if (type === 'csv') {
+        return parseCsv(input as string);
+    }
+    return parseText(Array.isArray(input) ? input : input.split('\n'));
+}
+
 const Papa = require('papaparse');
 
-function parseText(lines) {
-    const stack = [];
+function parseText(lines: string[]): any {
+    const stack: TreeNode[] = [];
     let root = null;
     let previousIndent = -1;
 
@@ -20,15 +33,16 @@ function parseText(lines) {
             while (stack.length > 0 && indent <= previousIndent) {
                 stack.pop();
                 previousIndent = stack.length > 0 ? 
-                    stack[stack.length - 1].level : -1;
+                    stack[stack.length - 1].level ?? -1 : -1;
             }
             
+            const node: TreeNode = { content, children: [], level: indent };
             if (stack.length > 0) {
                 stack[stack.length - 1].children.push(node);
             }
-            
-            node.level = indent;
             stack.push(node);
+            
+           
         }
         previousIndent = indent;
     });
@@ -36,7 +50,7 @@ function parseText(lines) {
     return [root];
 }
 
-function parseCsv(csvContent) {
+function parseCsv(csvContent: string): TreeNode[] {
     const parsedData = Papa.parse(csvContent, {
         header: false,
         skipEmptyLines: true
@@ -45,7 +59,7 @@ function parseCsv(csvContent) {
     const nodeMap = new Map();
     let root = null;
 
-    parsedData.forEach(([id, content]) => {
+    parsedData.forEach(([id, content]: [string, string]) => {
         const node = { content: content.trim(), children: [] };
         nodeMap.set(id, node);
 
@@ -63,14 +77,5 @@ function parseCsv(csvContent) {
         }
     });
 
-    return [root];
+    return root ? [root] : [];
 }
-
-function parse(input, type = 'text') {
-    if (type === 'csv') {
-        return parseCsv(input);
-    }
-    return parseText(Array.isArray(input) ? input : input.split('\n'));
-}
-
-module.exports = { parse };
