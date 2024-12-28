@@ -1,4 +1,4 @@
-const render = (data) => `<!DOCTYPE html>
+const render = (data: string) => `<!DOCTYPE html>
 <!-- Previous head content remains the same -->
 <head>
   <meta charset="utf-8">
@@ -103,19 +103,19 @@ const render = (data) => `<!DOCTYPE html>
       <button id="addFileBtn" onclick="document.getElementById('fileInput').click()">Add File</button>
       <input type="file" id="fileInput" accept=".txt,.csv"/>
     </div>
-    <button onclick="zoomIn()" ${!data.length ? 'disabled' : ''}>Zoom In (+)</button>
-    <button onclick="zoomOut()" ${!data.length ? 'disabled' : ''}>Zoom Out (-)</button>
-    <button onclick="resetView()" ${!data.length ? 'disabled' : ''}>Reset View</button>
-    <button onclick="exportAsPNG()" ${!data.length ? 'disabled' : ''}>Save as PNG</button>
+    <button onclick="zoomIn()" ${!data ? 'disabled' : ''}>Zoom In (+)</button>
+    <button onclick="zoomOut()" ${!data ? 'disabled' : ''}>Zoom Out (-)</button>
+    <button onclick="resetView()" ${!data ? 'disabled' : ''}>Reset View</button>
+    <button onclick="exportAsPNG()" ${!data ? 'disabled' : ''}>Save as PNG</button>
   </div>
   <div id="container">
-    ${!data.length ? '<div class="empty-state">Upload a file to start</div>' : ''}
+    ${!data ? '<div class="empty-state">Upload a file to start</div>' : ''}
   </div>
 
    <!-- Global variables -->
   <script>
     // Define global variables that will be used across functions
-    var treeData = ${data};
+    var treeData = ${data || '[]'}; // Provide default empty array if data is empty
     var margin, width, height;
     var svg, rootGroups, tree, diagonal, zoom;
     var i = 0, duration = 750;
@@ -143,8 +143,8 @@ const render = (data) => `<!DOCTYPE html>
 
     // Load libraries before initializing
     Promise.all([
-      loadScript('https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'),
-      loadScript('https://unpkg.com/papaparse@5.4.1/papaparse.min.js'),
+      loadScript('https://d3js.org/d3.v3.min.js'),
+      loadScript('https://cdn.jsdelivr.net/npm/papaparse@latest/papaparse.min.js'),
       loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js')
     ]).then(() => {
       console.log('Libraries loaded, initializing application...');
@@ -618,4 +618,8 @@ const render = (data) => `<!DOCTYPE html>
 </body>
 </html>`;
 
-exports.render = render;
+export interface Renderer {
+  render: (data: string) => string;
+}
+
+export { render };
